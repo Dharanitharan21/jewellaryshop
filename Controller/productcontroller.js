@@ -20,9 +20,9 @@ exports.create = (req, res, next) => {
             return res.status(400).json({ error: "Image upload failed." });
         }
         try {
-            const { name, price, stock, description, category, manufacturingDate, userId } = req.body
+            const { name, price, stock, description, category, materialtype,manufacturingDate, userId } = req.body
             const image = req.file ? req.file.path : null;
-            const productdoc = new productmodel({name,price,stock,description,category,manufacturingDate, image, userId})
+            const productdoc = new productmodel({name,price,stock,description,materialtype,category,manufacturingDate, image, userId})
             await productdoc.save();
             return res.status(201).json({ message: "Product created successfully", data: productdoc })
         } catch (err) {
@@ -72,7 +72,7 @@ exports.update = async (req, res, next) => {
             return res.status(400).json({ message: "Error uploading image", error: err.message });
         }
         try {
-            const { name, price, stock, description, category, manufacturingDate } = req.body
+            const { name, price, stock, description,materialtype, category, manufacturingDate } = req.body
             const image = req.file ? req.file.path : req.body.image;
             const product = await productmodel.findById(req.params.id);
             if (image && product) {
@@ -83,7 +83,7 @@ exports.update = async (req, res, next) => {
                     }
                 }) }
                 const updatedProduct = await productmodel.findByIdAndUpdate(
-                    req.params.id,{ name, price, stock, description, category, manufacturingDate ,image},{ new: true })
+                    req.params.id,{ name, price, stock, description, materialtype,category, manufacturingDate ,image},{ new: true })
                     if (!updatedProduct) {
                         return res.status(404).json({ message: "Product not found" });
                       }
