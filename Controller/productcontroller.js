@@ -21,7 +21,7 @@ exports.create = (req, res, next) => {
         }
         try {
             const { name, price, stock, description, category, materialtype,manufacturingDate, userId } = req.body
-            const image = req.file ? req.file.path : null;
+            const image = req.file ? `/api/uploads/images/${req.file.filename}` : null;
             const productdoc = new productmodel({name,price,stock,description,materialtype,category,manufacturingDate, image, userId})
             await productdoc.save();
             return res.status(201).json({ message: "Product created successfully", data: productdoc })
@@ -60,6 +60,18 @@ exports.remove = async (req, res, next) => {
         if (!product) {
             return res.status(400).json({ error: "Recrd not found" })
         }
+        if (product.image) {
+            const imagePath = path.join(
+              __dirname,
+              "..",
+              "uploads",
+              "images",
+              product.image
+            );
+            if (fs.existsSync(imagePath)) {
+              fs.unlinkSync(imagePath); // Delete image file
+            }
+          }
         return res.status(200).json({message:"deleted suceesfully", data: product })
     }
     catch (err) {
@@ -73,15 +85,14 @@ exports.update = async (req, res, next) => {
         }
         try {
             const { name, price, stock, description,materialtype, category, manufacturingDate } = req.body
-            const image = req.file ? req.file.path : req.body.image;
+            const image = req.file ? `/api/uploads/images/${req.file.filename}` : req.body.image;
             const product = await productmodel.findById(req.params.id);
             if (image && product) {
-                const oldimagepath = path.join(__dirname, "..", product.image)
-                fs.unlink(oldimagepath, (err) => {
-                    if (err) {
-                        console.error("Error deleting old image:", err)
-                    }
-                }) }
+                const oldimagepath = path.join(__dirname, "..", "uploads","images",product.image)
+                if (fs.existsSync(oldimagepath)) {
+                    fs.unlinkSync(oldimagepath); // Delete old image file if it exists
+                  }
+                }
                 const updatedProduct = await productmodel.findByIdAndUpdate(
                     req.params.id,{ name, price, stock, description, materialtype,category, manufacturingDate ,image},{ new: true })
                     if (!updatedProduct) {
