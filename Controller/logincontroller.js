@@ -13,7 +13,7 @@ exports.Login=async(req ,res ,next)=>{
        }
        console.log(logindoc);
        const token=signToken(logindoc._id)
-       return res.status(200).json({status:'success',token})
+       return res.status(200).json({status:'success',token, logindoc: { id: logindoc._id, name: logindoc.name, email: logindoc.email }})
         
     }
     catch(err){
