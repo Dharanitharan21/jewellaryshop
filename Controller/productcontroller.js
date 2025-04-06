@@ -56,22 +56,8 @@ exports.getbyid = async (req, res, next) => {
 }
 exports.remove = async (req, res, next) => {
     try {
-        const product = await productmodel.findOneAndDelete(req.params.id)
-        if (!product) {
-            return res.status(400).json({ error: "Recrd not found" })
-        }
-        if (product.image) {
-            const imagePath = path.join(
-              __dirname,
-              "..",
-              "uploads",
-              "images",
-              product.image
-            );
-            if (fs.existsSync(imagePath)) {
-              fs.unlinkSync(imagePath); // Delete image file
-            }
-          }
+        const {id} =req.params.id
+        const product = await productmodel.findByIdAndDelete(id)
         return res.status(200).json({message:"deleted suceesfully", data: product })
     } catch (err) {
         return res.status(500).json({ error: err.message });
