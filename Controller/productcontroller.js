@@ -56,7 +56,7 @@ exports.getbyid = async (req, res, next) => {
 }
 exports.remove = async (req, res, next) => {
     try {
-        const product = await productmodel.findOneAndDelete(req.params.id)
+        const product = await productmodel.findByIdAndDelete(req.params.id)
         if (!product) {
             return res.status(400).json({ error: "Recrd not found" })
         }
